@@ -30,7 +30,7 @@ def convert_to_onnx(pt_model_path, onnx_model_path, opset_version=12, dynamic=Fa
 
 if __name__ == "__main__":
     # 输入 .pt 模型路径
-    pt_model_path = "../raw_model/yolov8n.pt"
+    pt_model_path = "/home/joe/project/pth2onnx/raw_model"
 
     # 输出 .onnx 模型路径
     onnx_model_path = "/home/joe/project/pth2onnx/onnx_model"
@@ -40,7 +40,6 @@ if __name__ == "__main__":
         print("output path exist !")
         # 转换模型
         convert_to_onnx(pt_model_path, onnx_model_path, opset_version=12)
-
     else:
         print("output path error ! !")
 
