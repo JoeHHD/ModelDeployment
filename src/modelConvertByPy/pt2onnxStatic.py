@@ -39,6 +39,8 @@ if __name__ == "__main__":
     if os.path.exists(onnx_model_path):
         print("output path exist !")
         # 转换模型
+        # starting from '../raw_model/yolov8n.pt' with input shape (1, 3, 640, 640) BCHW 
+        # and output shape(s) (1, 84, 8400) (6.2 MB)
         convert_to_onnx(pt_model_path, onnx_model_path, opset_version=12)
     else:
         print("output path error ! !")
