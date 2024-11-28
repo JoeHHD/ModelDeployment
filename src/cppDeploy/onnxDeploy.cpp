@@ -69,7 +69,7 @@ void postprocess(const std::vector<float>& output, const cv::Mat& input_img, con
         float confidence = output[i * 6 + 4];
         int class_id = (int)output[i * 6 + 5];
 
-        if (confidence > 0.25) {
+        if (confidence > 0.90) {
             // Draw bounding box
             cv::rectangle(input_img, cv::Point((int)x1, (int)y1), cv::Point((int)x2, (int)y2), cv::Scalar(0, 255, 0), 2);
             // Display class and confidence
@@ -177,7 +177,6 @@ int main(int argc, char** argv) {
     // GetInputNameAllocated返回的是临时对象，不能直接&取地址
     const char* input_name = input_names[0].c_str(); 
     const char* output_name = output_names[0].c_str();
-    std::cout<<"input_name:"<<input_name<<std::endl;
     auto output_tensors = session.Run(
 			Ort::RunOptions{nullptr},
 			&input_name, &input_tensor, 1,
@@ -189,9 +188,13 @@ int main(int argc, char** argv) {
     cv::Size input_size(input_width, input_height);
     postprocess(vector<float>(output, output + output_tensors[0].GetTensorTypeAndShapeInfo().GetElementCount()), image, input_size);
 
-    // Display the result
-    // cv::imshow("Result", image);
-    // cv::waitKey(0);
-
+    // Save the result in local
+    std::string imgSavePath = "/home/joe/project/pth2onnx/images/processed_imgs/processed_img000001.jpg";
+    bool isSaved = cv::imwrite(imgSavePath, image);
+    if (isSaved) {
+        std::cout << "Image saved successfully." << std::endl;
+    } else {
+        std::cout << "Failed to save image." << std::endl;
+    }
     return 0;
 }
