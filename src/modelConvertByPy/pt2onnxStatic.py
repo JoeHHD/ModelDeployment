@@ -30,7 +30,7 @@ def convert_to_onnx(pt_model_path, onnx_model_path, opset_version=12, dynamic=Fa
 
 if __name__ == "__main__":
     # 输入 .pt 模型路径
-    pt_model_path = "/home/joe/project/pth2onnx/raw_model"
+    pt_model_path = "/home/joe/project/pth2onnx/raw_model/yolov8m.pt"
 
     # 输出 .onnx 模型路径
     onnx_model_path = "/home/joe/project/pth2onnx/onnx_model"

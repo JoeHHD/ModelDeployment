@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#include "nms.cpp"
+
 using namespace std;
 namespace fs = std::filesystem;
 // 等效于 std::string::ends_with，c++20标准
