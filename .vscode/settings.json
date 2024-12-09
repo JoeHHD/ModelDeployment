@@ -57,6 +57,12 @@
 		"thread": "cpp",
 		"typeinfo": "cpp",
 		"filesystem": "cpp",
-		"codecvt": "cpp"
-	}
+		"codecvt": "cpp",
+		"compare": "cpp",
+		"concepts": "cpp",
+		"numbers": "cpp",
+		"semaphore": "cpp",
+		"stop_token": "cpp"
+	},
+	"C_Cpp.errorSquiggles": "disabled"
 }
