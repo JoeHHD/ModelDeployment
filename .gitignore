@@ -1,3 +1,4 @@
 build/
 images/
 .vscode/
+raw_model/yolov8m.pt
