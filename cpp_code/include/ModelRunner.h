@@ -3,13 +3,14 @@
 
 #include <onnxruntime_cxx_api.h>
 #include <opencv2/opencv.hpp>
-#include <string>
 #include <vector>
+#include <string>
 
 class ModelRunner {
 public:
-    ModelRunner(const std::string& modelPath);
+    explicit ModelRunner(const std::string& modelPath);
     void runInference(const cv::Mat& inputImage, std::vector<float>& output);
+    void runInference(std::vector<float>& batchTensor, size_t batchSize, std::vector<std::vector<float>>& outputs);
     void postprocess(const std::vector<float>& output, const cv::Mat& inputImage, const cv::Size& inputSize);
 
 private:

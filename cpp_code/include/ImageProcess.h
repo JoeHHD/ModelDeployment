@@ -11,7 +11,8 @@ public:
     static bool endsWith(const std::string& str, const std::string& suffix);
     static void getImagesFromDirectory(const std::string& folderPath, std::vector<std::string>& imagePaths);
     static void preprocess(const cv::Mat& image, cv::Mat& processedImg, int inputHeight, int inputWidth);
-    static void preprocessImages(const std::vector<std::string>& imagePaths, std::vector<cv::Mat>& processedImages, int inputHeight, int inputWidth);
+    static void preprocessImages(const std::vector<cv::Mat>& images, std::vector<float>& batchTensor, 
+                                                        int inputHeight, int inputWidth);
 };
 
 #endif // IMAGE_PROCESSOR_H

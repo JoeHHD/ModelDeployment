@@ -1,5 +1,7 @@
-#include "ImageProcessor.h"
+#include "ImageProcess.h"
 #include "ModelRunner.h"
+#include <opencv2/opencv.hpp>
+#include <iostream>
 
 int main(int argc, char** argv) {
     if (argc < 3) {
