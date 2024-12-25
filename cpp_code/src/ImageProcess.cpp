@@ -29,15 +29,17 @@ void ImageProcessor::preprocess(const cv::Mat& image, cv::Mat& processedImg, int
     processedImg.convertTo(processedImg, CV_32F, 1.0 / 255);
 }
 
-void ImageProcessor::preprocessImages(const std::vector<cv::Mat>& images, std::vector<float>& batchTensor, 
-                                                        int inputHeight, int inputWidth) {
+void ImageProcessor::preprocessImages(const std::vector<cv::Mat>& images, 
+                                            std::vector<float>& batchTensor, 
+                                            int inputHeight, int inputWidth) {
     int batchSize = images.size();
     int inputChannels = 3; // 假设 RGB 格式
     batchTensor.resize(batchSize * inputChannels * inputHeight * inputWidth);
 
     for (int i = 0; i < batchSize; ++i) {
         cv::Mat resized, processedImg;
-        float scale = std::min(inputWidth / (float)images[i].cols, inputHeight / (float)images[i].rows);
+        float scale = std::min(inputWidth / (float)images[i].cols, 
+                                inputHeight / (float)images[i].rows);
         int nw = (int)(images[i].cols * scale);
         int nh = (int)(images[i].rows * scale);
 

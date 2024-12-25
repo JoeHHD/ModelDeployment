@@ -5,8 +5,6 @@
 #include <vector>
 #include <algorithm>
 
-namespace deploy::util {
-
 struct Box {
     float x;
     float y;
@@ -35,7 +33,5 @@ public:
         const std::vector<Detection>& detections, 
         float threshold);
 };
-
-} // namespace deploy::util
 
 #endif // NMS_H

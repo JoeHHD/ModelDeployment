@@ -1,4 +1,5 @@
 #include "ModelRunner.h"
+#include "nms.h"
 #include <iostream>
 #include <cstring> // For memcpy
 
@@ -77,7 +78,7 @@ void ModelRunner::runInference(const cv::Mat& inputImage, std::vector<float>& ou
     output.assign(outputData, outputData + outputTensorSize);
 }
 // 推理多张图片
-void ModelRunner::runInference(std::vector<float>& batchTensor, 
+void ModelRunner::runInferenceBatch(std::vector<float>& batchTensor, 
                                 size_t batchSize, 
                                 std::vector<std::vector<float>>& outputs) {
     // 更新输入形状以支持批量维度
@@ -112,18 +113,49 @@ void ModelRunner::runInference(std::vector<float>& batchTensor,
 
 void ModelRunner::postprocess(const std::vector<float>& output, const cv::Mat& inputImage, const cv::Size& inputSize) {
     int numDetections = output.size() / 6;
+    std::vector<Detection> detections;
+
+    // 将输出解析为检测结果
     for (int i = 0; i < numDetections; ++i) {
-        float x1 = output[i * 6];
-        float y1 = output[i * 6 + 1];
-        float x2 = output[i * 6 + 2];
-        float y2 = output[i * 6 + 3];
+        float x = output[i * 6];
+        float y = output[i * 6 + 1];
+        float w = output[i * 6 + 2];
+        float h = output[i * 6 + 3];
         float confidence = output[i * 6 + 4];
         int classId = static_cast<int>(output[i * 6 + 5]);
 
-        if (confidence > 0.90) {
-            cv::rectangle(inputImage, cv::Point((int)x1, (int)y1), cv::Point((int)x2, (int)y2), cv::Scalar(0, 255, 0), 2);
-            std::string label = "Class " + std::to_string(classId) + ": " + std::to_string(confidence);
-            cv::putText(inputImage, label, cv::Point((int)x1, (int)y1 - 10), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 1);
+        if (confidence > 0.8) {  // 置信度阈值
+            detections.push_back({{x, y, w, h}, confidence, classId});
         }
+    }
+
+    // 执行非极大值抑制
+    nms nmsProcessor;
+    std::vector<Detection> filteredDetections = nmsProcessor.nonMaxSuppression(detections, 0.3);
+    // 限制检测框数量
+    int maxBoxes = 3;
+    if (filteredDetections.size() > maxBoxes) {
+        filteredDetections.resize(maxBoxes);
+    }
+    // 绘制检测框
+    for (const auto& detection : filteredDetections) {
+        const auto& box = detection.box;
+        float x1 = box.x - box.w / 2;
+        float y1 = box.y - box.h / 2;
+        float x2 = box.x + box.w / 2;
+        float y2 = box.h + box.h / 2;
+
+        cv::rectangle(inputImage, cv::Point((int)x1, (int)y1), 
+                        cv::Point((int)x2, (int)y2), cv::Scalar(0, 255, 0), 2);
+        std::string label = "Class: " + std::to_string(detection.class_id) + " Confidence: " + 
+                                std::to_string(detection.confidence);
+        cv::putText(inputImage, label, cv::Point((int)x1, (int)y1 - 10), 
+                        cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 1);
+    }
+}
+void ModelRunner::postprocessBatch(const std::vector<std::vector<float>>& outputs, 
+                                    const std::vector<cv::Mat>& inputImages, const cv::Size& inputSize) {
+    for (size_t i = 0; i < outputs.size(); ++i) {
+        postprocess(outputs[i], inputImages[i], inputSize);
     }
 }

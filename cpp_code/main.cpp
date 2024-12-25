@@ -10,20 +10,36 @@ int main(int argc, char** argv) {
     }
 
     ModelRunner modelRunner(argv[1]);
-    cv::Mat image = cv::imread(argv[2]);
-    if (image.empty()) {
-        std::cerr << "Failed to load image." << std::endl;
+
+    // 获取图片列表
+    std::vector<std::string> imagePaths;
+    ImageProcessor::getImagesFromDirectory(argv[2], imagePaths);
+    if (imagePaths.empty()) {
+        std::cerr << "No images found in the directory." << std::endl;
         return -1;
     }
 
-    cv::Mat processedImage;
-    ImageProcessor::preprocess(image, processedImage, 640, 640);
+    // 加载并预处理图片
+    std::vector<cv::Mat> inputImages;
+    for (const auto& imagePath : imagePaths) {
+        cv::Mat img = cv::imread(imagePath);
+        if (!img.empty()) {
+            inputImages.push_back(img);
+        }
+    }
 
-    std::vector<float> output;
-    modelRunner.runInference(processedImage, output);
+    std::vector<float> batchTensor;
+    ImageProcessor::preprocessImages(inputImages, batchTensor, 640, 640);
 
-    modelRunner.postprocess(output, image, cv::Size(640, 640));
-    cv::imwrite("result.jpg", image);
+    // 批量推理
+    std::vector<std::vector<float>> outputs;
+    modelRunner.runInferenceBatch(batchTensor, inputImages.size(), outputs);
+
+    // 后处理并保存结果
+    modelRunner.postprocessBatch(outputs, inputImages, cv::Size(640, 640));
+    for (size_t i = 0; i < inputImages.size(); ++i) {
+        cv::imwrite("/mnt/f/dataset/miniDataset/result_" + std::to_string(i) + ".jpg", inputImages[i]);
+    }
 
     return 0;
 }
