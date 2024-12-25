@@ -2,3 +2,4 @@ build/
 images/
 .vscode/
 raw_model/
+cpp_code/build/
