@@ -23,3 +23,5 @@ print(f"First Box Features: {first_box}")
 # 提取置信度
 confidence = first_box[4]  # 索引 4 通常是 confidence
 print(f"Confidence: {confidence}")
+
+

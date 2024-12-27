@@ -12,8 +12,9 @@ public:
     void runInference(const cv::Mat& inputImage, std::vector<float>& output);
     void runInferenceBatch(std::vector<float>& batchTensor, size_t batchSize, 
                             std::vector<std::vector<float>>& outputs);
-    void postprocess(const std::vector<float>& output, const cv::Mat& inputImage, 
-                        const cv::Size& inputSize);
+    void ModelRunner::postprocess(const std::vector<float>& output, const cv::Mat& inputImage, 
+                                    const cv::Size& inputSize, float scale, int padW, int padH);
+
     void postprocessBatch(const std::vector<std::vector<float>>& outputs, 
                             const std::vector<cv::Mat>& inputImages, const cv::Size& inputSize);
 

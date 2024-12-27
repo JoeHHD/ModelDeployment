@@ -2,7 +2,7 @@
 #include "ModelRunner.h"
 #include <opencv2/opencv.hpp>
 #include <iostream>
-
+// model output Shape of outputs[0]: (4, 84, 8400)
 int main(int argc, char** argv) {
     if (argc < 3) {
         std::cerr << "Usage: ./yolo_inference <model_path.onnx> <image_path>" << std::endl;

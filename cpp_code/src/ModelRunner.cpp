@@ -111,7 +111,8 @@ void ModelRunner::runInferenceBatch(std::vector<float>& batchTensor,
     }
 }
 
-void ModelRunner::postprocess(const std::vector<float>& output, const cv::Mat& inputImage, const cv::Size& inputSize) {
+void ModelRunner::postprocess(const std::vector<float>& output, const cv::Mat& inputImage, 
+                                const cv::Size& inputSize, float scale, int padW, int padH) {
     int numDetections = output.size() / 6;
     std::vector<Detection> detections;
 
@@ -124,14 +125,16 @@ void ModelRunner::postprocess(const std::vector<float>& output, const cv::Mat& i
         float confidence = output[i * 6 + 4];
         int classId = static_cast<int>(output[i * 6 + 5]);
 
-        if (confidence > 0.8) {  // 置信度阈值
+        if (confidence > 0.6) {  // 置信度阈值
             detections.push_back({{x, y, w, h}, confidence, classId});
+        }else{
+            continue;
         }
     }
 
     // 执行非极大值抑制
     nms nmsProcessor;
-    std::vector<Detection> filteredDetections = nmsProcessor.nonMaxSuppression(detections, 0.3);
+    std::vector<Detection> filteredDetections = nmsProcessor.nonMaxSuppression(detections, 0.45);
     // 限制检测框数量
     int maxBoxes = 3;
     if (filteredDetections.size() > maxBoxes) {
@@ -144,6 +147,12 @@ void ModelRunner::postprocess(const std::vector<float>& output, const cv::Mat& i
         float y1 = box.y - box.h / 2;
         float x2 = box.x + box.w / 2;
         float y2 = box.h + box.h / 2;
+
+        // 将坐标从模型输入空间映射回原始图像空间
+        x1 = (x1 - padW) / scale;
+        y1 = (y1 - padH) / scale;
+        x2 = (x2 - padW) / scale;
+        y2 = (y2 - padH) / scale;
 
         cv::rectangle(inputImage, cv::Point((int)x1, (int)y1), 
                         cv::Point((int)x2, (int)y2), cv::Scalar(0, 255, 0), 2);
