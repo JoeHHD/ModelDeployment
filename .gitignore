@@ -2,4 +2,5 @@ build/
 images/
 .vscode/
 raw_model/
+onnx_model/
 cpp_code/build/
